@@ -2,6 +2,7 @@ package io.hoank.verticles;
 
 import io.hoank.rest.ArticleHandler;
 import io.hoank.rest.PingHandler;
+import io.hoank.services.KafkaService;
 import io.hoank.services.MongoService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -16,15 +17,16 @@ import org.apache.logging.log4j.Logger;
 public class HttpVerticle extends AbstractVerticle {
     private static Logger log = LogManager.getLogger(HttpVerticle.class);
 
-    private MongoService mongoService;
+    protected MongoService mongoService;
+    protected KafkaService kafkaService;
 
     @Override
     public void start(Future<Void> future) throws Exception {
-
+        kafkaService = KafkaService.createProxy(vertx, KafkaService.class.getSimpleName());
+        var router = Router.router(vertx);
+        new PingHandler(vertx, kafkaService).configRoute(router);
         mongoService = MongoService.createProxy(vertx, MongoService.class.getSimpleName());
         final Integer httpPort = config().getInteger("http.port", 8080);
-        var router = Router.router(vertx);
-        new PingHandler(vertx).configRoute(router);
         new ArticleHandler(vertx, mongoService).configRoute(router);
         vertx.createHttpServer()
                 .requestHandler(router)

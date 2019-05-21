@@ -1,8 +1,14 @@
 package io.hoank;
 
+import io.hoank.config.Configuration;
+import io.vertx.config.ConfigRetriever;
+import io.vertx.config.ConfigRetrieverOptions;
+import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.json.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,10 +21,55 @@ public class Application{
 
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
+
         Future<String> future = Future.future();
-        vertx.deployVerticle("io.hoank.verticles.DatabaseVerticle", Application::handle);
-        vertx.deployVerticle("io.hoank.verticles.HelloVerticle", Application::handle);
-        vertx.deployVerticle("io.hoank.verticles.HttpVerticle", Application::handle);
+        ConfigStoreOptions file = new ConfigStoreOptions()
+                .setType("file")
+                .setFormat("properties")
+                .setConfig(new JsonObject().put("path", "application.properties"));
+
+        String profile = System.getProperty("application.profile", "uat");
+        log.warn("Active profile: {}", profile);
+
+        ConfigStoreOptions profileFile = new ConfigStoreOptions()
+                .setType("file")
+                .setFormat("properties")
+                .setConfig(new JsonObject().put("path", String.format("%s.properties", profile)));
+
+        ConfigStoreOptions env = new ConfigStoreOptions().setType("env");
+        ConfigStoreOptions sys = new ConfigStoreOptions().setType("sys");
+
+        ConfigRetrieverOptions options = new ConfigRetrieverOptions()
+                .addStore(file)
+                .addStore(profileFile)
+                .addStore(env)
+                .addStore(sys);
+        ConfigRetriever retriever = ConfigRetriever.create(vertx, options);
+
+        retriever.getConfig(json -> {
+            if (json.failed()) {
+                // Failed to retrieve the configuration
+                log.error("Failed to retrieve configurations. Cause: " + json.cause().getMessage(), json.cause());
+                return;
+            }
+            log.info("Retrieve configuration success");
+            JsonObject config = json.result();
+            // Close the Vert.X instance, we don't need it anymore
+            vertx.close();
+
+            // Configuration must be setup before other manipulations
+            Configuration configuration = Configuration.setup(config);
+
+            // Actual verticle options
+            VertxOptions vertxOptions = new VertxOptions(configuration.getVertxOptions());
+            Vertx deploymentVertx = Vertx.vertx(vertxOptions);
+
+            deploymentVertx.deployVerticle("io.hoank.verticles.DatabaseVerticle", Application::handle);
+            deploymentVertx.deployVerticle("io.hoank.verticles.HelloVerticle", Application::handle);
+            deploymentVertx.deployVerticle("io.hoank.verticles.HttpVerticle", Application::handle);
+            deploymentVertx.deployVerticle("io.hoank.verticles.KafkaVerticle", Application::handle);
+
+        });
 
     }
 
