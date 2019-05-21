@@ -9,8 +9,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.FindOptions;
-import io.vertx.reactivex.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceProxyBuilder;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public interface MongoService {
                                 final Handler<AsyncResult<JsonObject>> resultHandler);
 
     @Fluent
-    public MongoService find(final String collection, final JsonObject query, final FindOptions options, Handler<AsyncResult<List<JsonObject>>> resultHandler);
+    public MongoService find(final String collection, final JsonObject query, Handler<AsyncResult<List<JsonObject>>> resultHandler);
 
     @Fluent
     public MongoService insertOne(final String collection, final JsonObject document, final Handler<AsyncResult<String>> resultHandler);

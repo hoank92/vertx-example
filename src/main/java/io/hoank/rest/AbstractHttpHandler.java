@@ -1,7 +1,7 @@
 package io.hoank.rest;
 
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.ext.web.Router;
+import io.vertx.core.Vertx;
+import io.vertx.ext.web.Router;
 import lombok.Data;
 
 /**

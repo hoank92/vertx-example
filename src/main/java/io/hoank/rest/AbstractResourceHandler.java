@@ -1,7 +1,7 @@
 package io.hoank.rest;
 
 import io.hoank.services.MongoService;
-import io.vertx.reactivex.core.Vertx;
+import io.vertx.core.Vertx;
 import lombok.Data;
 
 /**
@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 public abstract class AbstractResourceHandler extends AbstractHttpHandler {
-    private MongoService mongoService;
+    protected MongoService mongoService;
     public AbstractResourceHandler(Vertx vertx, MongoService mongoService) {
         super(vertx);
         this.mongoService = mongoService;

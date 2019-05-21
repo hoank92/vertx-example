@@ -1,20 +1,21 @@
 package io.hoank.verticles;
 
-import io.hoank.rest.ArticleHandler;
-import io.hoank.rest.PingHandler;
 import io.hoank.services.MongoService;
+import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
-import io.vertx.reactivex.core.AbstractVerticle;
-import io.vertx.reactivex.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceBinder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Created by hoank92 on May, 2019
  */
 public class DatabaseVerticle extends AbstractVerticle {
-    public static MongoService mongoService;
+
+    private static Logger log = LogManager.getLogger(DatabaseVerticle.class);
+
 
     @Override
     public void start(Future<Void> future) throws Exception {
@@ -24,24 +25,16 @@ public class DatabaseVerticle extends AbstractVerticle {
 
         final MongoClient mongoClient = MongoClient.createShared(vertx, config);
 
-        mongoService = MongoService.create(mongoClient, ready -> {
+        MongoService.create(mongoClient, ready -> {
             if (ready.succeeded()) {
-                new ServiceBinder(vertx.getDelegate()).setAddress(MongoService.DEFAULT_ADDRESS)
-                        .register(MongoService.class, ready.result()).completionHandler(ar -> {
-                            if (ar.succeeded()) {
-                                future.complete();
-                            } else {
-                                future.fail(ar.cause());
-                            }
-                });
+                ServiceBinder binder = new ServiceBinder(vertx);
+                binder.setAddress(MongoService.class.getSimpleName())
+                        .register(MongoService.class, ready.result());
+                log.info("Mongodb hash ben connected");
             } else {
+                log.info("Failed to connect mongodb");
                 future.fail(ready.cause());
             }
         });
-    }
-
-    @Override
-    public void stop() throws Exception {
-        mongoService.close();
     }
 }
