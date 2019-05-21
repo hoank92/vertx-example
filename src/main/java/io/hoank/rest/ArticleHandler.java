@@ -1,7 +1,6 @@
 package io.hoank.rest;
 
 import io.hoank.services.MongoService;
-import io.hoank.services.impl.MongoServiceImpl;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -33,7 +32,7 @@ public class ArticleHandler extends AbstractResourceHandler {
 
     private void getArticles(RoutingContext routingContext) {
 
-        this.getMongoService().find("articles", new JsonObject(), res -> {
+        mongoService.find("articles", new JsonObject(), res -> {
             routingContext.response()
                     .putHeader("content-type", "application/json")
                     .setStatusCode(200)
@@ -43,7 +42,7 @@ public class ArticleHandler extends AbstractResourceHandler {
     }
 
     private void addArticles(RoutingContext context) {
-        this.getMongoService().insertOne("articles", new JsonObject().put("autho", "hoank").put("content", "kakak"), res -> {
+        mongoService.insertOne("articles", new JsonObject().put("autho", "hoank").put("content", "kakak"), res -> {
             context.response()
                     .putHeader("content-type", "application/json")
                     .setStatusCode(200)

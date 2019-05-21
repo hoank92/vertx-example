@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 public abstract class AbstractResourceHandler extends AbstractHttpHandler {
-    private MongoService mongoService;
+    protected MongoService mongoService;
     public AbstractResourceHandler(Vertx vertx, MongoService mongoService) {
         super(vertx);
         this.mongoService = mongoService;

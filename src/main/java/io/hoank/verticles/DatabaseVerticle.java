@@ -6,13 +6,16 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceBinder;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Created by hoank92 on May, 2019
  */
-@Log4j2
 public class DatabaseVerticle extends AbstractVerticle {
+
+    private static Logger log = LogManager.getLogger(DatabaseVerticle.class);
+
 
     @Override
     public void start(Future<Void> future) throws Exception {
@@ -29,7 +32,7 @@ public class DatabaseVerticle extends AbstractVerticle {
                         .register(MongoService.class, ready.result());
                 log.info("Mongodb hash ben connected");
             } else {
-                log.error("Failed to connect mongodb");
+                log.info("Failed to connect mongodb");
                 future.fail(ready.cause());
             }
         });
