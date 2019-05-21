@@ -1,20 +1,18 @@
 package io.hoank.verticles;
 
-import io.hoank.rest.ArticleHandler;
-import io.hoank.rest.PingHandler;
 import io.hoank.services.MongoService;
+import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
-import io.vertx.reactivex.core.AbstractVerticle;
-import io.vertx.reactivex.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceBinder;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Created by hoank92 on May, 2019
  */
+@Log4j2
 public class DatabaseVerticle extends AbstractVerticle {
-    public static MongoService mongoService;
 
     @Override
     public void start(Future<Void> future) throws Exception {
@@ -24,24 +22,16 @@ public class DatabaseVerticle extends AbstractVerticle {
 
         final MongoClient mongoClient = MongoClient.createShared(vertx, config);
 
-        mongoService = MongoService.create(mongoClient, ready -> {
+        MongoService.create(mongoClient, ready -> {
             if (ready.succeeded()) {
-                new ServiceBinder(vertx.getDelegate()).setAddress(MongoService.DEFAULT_ADDRESS)
-                        .register(MongoService.class, ready.result()).completionHandler(ar -> {
-                            if (ar.succeeded()) {
-                                future.complete();
-                            } else {
-                                future.fail(ar.cause());
-                            }
-                });
+                ServiceBinder binder = new ServiceBinder(vertx);
+                binder.setAddress(MongoService.class.getSimpleName())
+                        .register(MongoService.class, ready.result());
+                log.info("Mongodb hash ben connected");
             } else {
+                log.error("Failed to connect mongodb");
                 future.fail(ready.cause());
             }
         });
-    }
-
-    @Override
-    public void stop() throws Exception {
-        mongoService.close();
     }
 }

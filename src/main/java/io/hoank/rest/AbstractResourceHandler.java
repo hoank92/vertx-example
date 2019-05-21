@@ -1,7 +1,7 @@
 package io.hoank.rest;
 
 import io.hoank.services.MongoService;
-import io.vertx.reactivex.core.Vertx;
+import io.vertx.core.Vertx;
 import lombok.Data;
 
 /**

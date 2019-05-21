@@ -2,12 +2,11 @@ package io.hoank.rest;
 
 import io.hoank.services.MongoService;
 import io.hoank.services.impl.MongoServiceImpl;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.FindOptions;
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.ext.web.Router;
-import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class ArticleHandler extends AbstractResourceHandler {
 
     private void getArticles(RoutingContext routingContext) {
 
-        this.getMongoService().find("articles", new JsonObject(), new FindOptions(), res -> {
+        this.getMongoService().find("articles", new JsonObject(), res -> {
             routingContext.response()
                     .putHeader("content-type", "application/json")
                     .setStatusCode(200)

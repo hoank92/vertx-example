@@ -11,10 +11,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class HelloVerticle extends AbstractVerticle {
-    public static void main(String[] args) {
-        Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(new HelloVerticle());
-    }
 
     @Override
     public void start(Future<Void> future) {
