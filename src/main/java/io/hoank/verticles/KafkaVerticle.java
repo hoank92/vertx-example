@@ -9,12 +9,15 @@ import io.vertx.core.Future;
 import io.vertx.ext.web.Router;
 import io.vertx.kafka.client.common.TopicPartition;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
+import io.vertx.kafka.client.consumer.KafkaConsumerRecord;
+import io.vertx.kafka.client.consumer.KafkaConsumerRecords;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.serviceproxy.ServiceBinder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -31,7 +34,8 @@ public class KafkaVerticle extends AbstractVerticle {
         // Generate consumer group id
         if (!kafkaConfig.containsKey("group.id")) {
             String groupPrefix = kafkaConfig.getOrDefault("group.id.prefix", "themis.");
-            kafkaConfig.put("group.id", groupPrefix + InetAddress.getLocalHost().getHostAddress());
+            kafkaConfig.put("group.id", groupPrefix);
+            //kafkaConfig.put("group.id", groupPrefix + InetAddress.getLocalHost().getHostAddress());
         }
 
         // Initialize shared producer
@@ -63,13 +67,13 @@ public class KafkaVerticle extends AbstractVerticle {
         consumer.subscribe(kafkaTopic, subscribe -> {
             if (subscribe.succeeded()) {
                 log.info("Subscribed topic {} by group.id {}", kafkaTopic, kafkaConfig.get("group.id"));
-                consumer.seekToEnd(new TopicPartition().setTopic(kafkaTopic), done -> {
-                    if (done.succeeded()) {
-                        log.debug("Seek to end {topic={}}", kafkaTopic);
-                    } else {
-                        log.warn(done.cause().getMessage(), done.cause());
-                    }
-                });
+//                consumer.seekToEnd(Collections.singleton(topicPartition), done -> {
+//                    if (done.succeeded()) {
+//                        log.debug("Seek to end {topic={}}", kafkaTopic);
+//                    } else {
+//                        log.error(done.cause().getMessage(), done.cause());
+//                    }
+//                });
                 startFuture.complete();
             } else {
                 log.error("Failed to subscribe topic {}", kafkaTopic);

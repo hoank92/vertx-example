@@ -4,10 +4,7 @@ import io.hoank.config.Configuration;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,10 +61,13 @@ public class Application{
             VertxOptions vertxOptions = new VertxOptions(configuration.getVertxOptions());
             Vertx deploymentVertx = Vertx.vertx(vertxOptions);
 
+            DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true).setInstances(3);
+
+
             deploymentVertx.deployVerticle("io.hoank.verticles.DatabaseVerticle", Application::handle);
             deploymentVertx.deployVerticle("io.hoank.verticles.HelloVerticle", Application::handle);
             deploymentVertx.deployVerticle("io.hoank.verticles.HttpVerticle", Application::handle);
-            deploymentVertx.deployVerticle("io.hoank.verticles.KafkaVerticle", Application::handle);
+            deploymentVertx.deployVerticle("io.hoank.verticles.KafkaVerticle", deploymentOptions, Application::handle);
 
         });
 

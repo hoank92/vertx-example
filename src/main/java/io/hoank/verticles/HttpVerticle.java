@@ -16,15 +16,12 @@ import org.apache.logging.log4j.Logger;
 
 public class HttpVerticle extends AbstractVerticle {
     private static Logger log = LogManager.getLogger(HttpVerticle.class);
-
     protected MongoService mongoService;
-    protected KafkaService kafkaService;
 
     @Override
     public void start(Future<Void> future) throws Exception {
-        kafkaService = KafkaService.createProxy(vertx, KafkaService.class.getSimpleName());
         var router = Router.router(vertx);
-        new PingHandler(vertx, kafkaService).configRoute(router);
+        new PingHandler(vertx).configRoute(router);
         mongoService = MongoService.createProxy(vertx, MongoService.class.getSimpleName());
         final Integer httpPort = config().getInteger("http.port", 8080);
         new ArticleHandler(vertx, mongoService).configRoute(router);

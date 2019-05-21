@@ -26,8 +26,7 @@ public class KafkaServiceImpl implements KafkaService {
 
     @Override
     public KafkaService broadcast(JsonObject message) {
-        KafkaProducerRecord<String, JsonObject> record = KafkaProducerRecord.create(config.get("topic"),
-                config.get("group.id"), message);
+        KafkaProducerRecord<String, JsonObject> record = KafkaProducerRecord.create(config.get("topic"), message);
         producer.write(record);
         return this;
     }
