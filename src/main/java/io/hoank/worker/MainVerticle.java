@@ -14,8 +14,7 @@ public class MainVerticle {
 
         DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true).setInstances(1);
         Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle("io.hoank.worker.WorkerVerticle",
-                deploymentOptions);
+        //vertx.deployVerticle("io.hoank.Worker1Verticle.KafkaVerticle", deploymentOptions);
         vertx.deployVerticle("io.hoank.worker.Worker1Verticle",
                 deploymentOptions);
 

@@ -2,30 +2,23 @@ package io.hoank.verticles;
 
 import io.hoank.AppConstant;
 import io.hoank.config.Configuration;
-import io.hoank.rest.PingHandler;
 import io.hoank.services.KafkaService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.ext.web.Router;
-import io.vertx.kafka.client.common.TopicPartition;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
-import io.vertx.kafka.client.consumer.KafkaConsumerRecord;
-import io.vertx.kafka.client.consumer.KafkaConsumerRecords;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.serviceproxy.ServiceBinder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Map;
 
 /**
  * Created by hoank92 on May, 2019
  */
-public class KafkaVerticle extends AbstractVerticle {
+public class KafkaMasterVerticle extends AbstractVerticle {
 
-    private static Logger log = LogManager.getLogger(KafkaVerticle.class);
+    private static Logger log = LogManager.getLogger(KafkaMasterVerticle.class);
     public static final String DEFAULT_TOPIC = "mkp.test";
     @Override
     public void start(Future<Void> startFuture) throws Exception {

@@ -20,7 +20,7 @@ public class DatabaseVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> future) throws Exception {
         JsonObject config = new JsonObject()
-                .put("connection_string", "mongodb://10.20.43.48:27017")
+                .put("connection_string", "mongodb://localhost:27017")
                 .put("db_name", "tiki");
 
         final MongoClient mongoClient = MongoClient.createShared(vertx, config);

@@ -61,13 +61,16 @@ public class Application{
             VertxOptions vertxOptions = new VertxOptions(configuration.getVertxOptions());
             Vertx deploymentVertx = Vertx.vertx(vertxOptions);
 
-            DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true).setInstances(3);
+            // DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true).setInstances(3);
+            int INSTANCES = Runtime.getRuntime().availableProcessors() * 2;
+            DeploymentOptions deploymentOptions = new DeploymentOptions().setInstances(INSTANCES);
 
 
-            deploymentVertx.deployVerticle("io.hoank.verticles.DatabaseVerticle", Application::handle);
-            deploymentVertx.deployVerticle("io.hoank.verticles.HelloVerticle", Application::handle);
-            deploymentVertx.deployVerticle("io.hoank.verticles.HttpVerticle", Application::handle);
-            deploymentVertx.deployVerticle("io.hoank.verticles.KafkaVerticle", deploymentOptions, Application::handle);
+
+            //deploymentVertx.deployVerticle("io.hoank.verticles.DatabaseVerticle", Application::handle);
+            //deploymentVertx.deployVerticle("io.hoank.verticles.HelloVerticle", Application::handle);
+            deploymentVertx.deployVerticle("io.hoank.verticles.HttpVerticle", deploymentOptions, Application::handle);
+            //deploymentVertx.deployVerticle("io.hoank.verticles.KafkaVerticle", deploymentOptions, Application::handle);
 
         });
 
